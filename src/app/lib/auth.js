@@ -11,9 +11,10 @@ async function getUser(email) {
   });
 }
 
+// NextAuth　認証の設定
 export const authOptions = {
   pages: { signIn: "/login" },
-  session: { strategy: "jwt", maxAge: 60 * 60 },
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24 }, // セッションの有効期限1日
   secret: process.env.NEXTAUTH_SECRET,
   // CredentialsProviderの設定（メアドとパスワードでログインさせるための仕組み）
   providers: [
@@ -53,10 +54,30 @@ export const authOptions = {
         // 認証成功 → セッションに含める情報を返す
         return {
           id: user.id,
-          name: user.name,
+          name: user.email,
           email: user.email,
+          role: user.role,
         };
       },
     }),
   ],
+  // セッションに保存
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.email = token.email;
+        session.user.role = token.role;
+      }
+      return session;
+    },
+  },
 };

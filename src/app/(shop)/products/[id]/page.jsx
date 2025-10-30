@@ -26,7 +26,7 @@ export default async function Productpage({ params }) {
       )}
       <h2 className="font-bold text-lg">{product.name}</h2>
       <h1 className="font-semibold text-lg mt-1">
-        価格: ￥{product.price.toString()}(税込)
+        価格: ￥{product.price.toNumber().toLocaleString()}(税込)
       </h1>
       <p className="mt-1">■商品説明: {product.description}</p>
       <p className="mt-1">在庫数: {product.stock}</p>

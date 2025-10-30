@@ -18,7 +18,9 @@ export default function ProductCard({ product }) {
           </div>
         )}
         <h2 className="font-bold text-lg">{product.name}</h2>
-        <p className="font-semibold">￥{product.price.toString()}</p>
+        <p className="font-semibold">
+          ￥{product.price.toNumber().toLocaleString()}
+        </p>
       </Link>
     </div>
   );
