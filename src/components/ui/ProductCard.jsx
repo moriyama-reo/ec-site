@@ -19,7 +19,7 @@ export default function ProductCard({ product }) {
         )}
         <h2 className="font-bold text-lg">{product.name}</h2>
         <p className="font-semibold">
-          ￥{product.price.toNumber().toLocaleString()}
+          ￥{product.price.toNumber().toLocaleString()}(税込)
         </p>
       </Link>
     </div>

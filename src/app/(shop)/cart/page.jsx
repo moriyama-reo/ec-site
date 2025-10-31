@@ -39,7 +39,7 @@ export default async function Cartpage() {
         買い物を続ける
       </Link>
       <Link
-        href="/products"
+        href="/checkout"
         className="flex justify-center items-center rounded bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 mt-4 w-auto max-w-xs mx-auto"
       >
         購入

@@ -4,9 +4,7 @@ import { getToken } from "next-auth/jwt";
 
 export async function middleware(req) {
   // JWT（セッション情報）を取得
-  console.log("🔥:", req.nextUrl.pathname);
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  console.log(token);
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!token;
 
@@ -18,6 +16,11 @@ export async function middleware(req) {
   // 未ログインユーザーが保護されたページにアクセスした場合、「/login」にリダイレクト
   if (!isLoggedIn && !pathname.startsWith("/login")) {
     return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  // ログイン済みユーザーが "/"" に来たら /products へ
+  if (isLoggedIn && pathname === "/") {
+    return NextResponse.redirect(new URL("/products", req.url));
   }
 
   // 認証OKなら処理続行

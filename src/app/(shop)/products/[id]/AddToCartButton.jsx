@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function AddToCartButton({ productId }) {
-  const router = useRouter();
+  const [message, setMessage] = useState("");
+
   const handleClick = async () => {
     try {
       const res = await fetch("/api/cart", {
@@ -13,7 +14,7 @@ export default function AddToCartButton({ productId }) {
       });
       const data = await res.json();
       console.log("登録成功:", data);
-      router.push("/cart");
+      setMessage(data.data.message);
     } catch (error) {
       console.error("カート登録エラー:", error);
     }
@@ -28,6 +29,12 @@ export default function AddToCartButton({ productId }) {
       >
         カートに追加
       </button>
+      {/* 🟡 メッセージ表示 */}
+      {message && (
+        <p className="text-center text-green-600 font-semibold mt-2 animate-fade-in">
+          {message}
+        </p>
+      )}
     </div>
   );
 }

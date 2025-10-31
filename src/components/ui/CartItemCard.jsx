@@ -1,9 +1,11 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CartItemCard({ cartItem }) {
   const [quantity, setQuantity] = useState(cartItem.quantity);
+  const router = useRouter();
 
   // API へ更新リクエスト
   const updateQuantityAPI = async (cartItemId, newQuantity, prevQuantity) => {
@@ -17,7 +19,7 @@ export default function CartItemCard({ cartItem }) {
       const data = await res.json();
       console.log("更新成功:", data);
     } catch (error) {
-      console.error(error);
+      console.log(error);
       setQuantity(prevQuantity);
     }
   };
@@ -47,7 +49,6 @@ export default function CartItemCard({ cartItem }) {
 
   // 商品を削除する
   const handleDelete = async (cartItemId) => {
-    console.log(cartItemId);
     // API へ削除リクエスト
     try {
       const res = await fetch(`/api/cart/${cartItemId}`, {
@@ -56,6 +57,7 @@ export default function CartItemCard({ cartItem }) {
       if (!res.ok) throw new Error("数量変更失敗");
       const data = await res.json();
       console.log("削除成功:", data);
+      router.push("/cart");
     } catch (error) {
       console.log(error);
     }
@@ -76,7 +78,7 @@ export default function CartItemCard({ cartItem }) {
         </div>
         <h2 className="font-bold text-lg">{cartItem.product.name}</h2>
         <p className="font-semibold">
-          ￥{cartItem.product.price.toLocaleString()}
+          ￥{cartItem.product.price.toLocaleString()}(税込)
         </p>
         <p>数量：{quantity}</p>
 
