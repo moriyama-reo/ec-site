@@ -4,8 +4,18 @@ import LogoutButton from "./LogoutButton";
 import { Suspense } from "react";
 import ProductCardSkelton from "../../../components/ui/ProductCardSkelton";
 import ProductList from "../products/ProductList";
+import ProductRegisterButton from "./ProductsNewButton";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../lib/auth";
 
 export default async function Productspage({ searchParams }) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return new Response("ログインしてください", { status: 401 });
+  }
+
+  const UserRole = session.user.role;
+
   return (
     <>
       <header className="relative flex items-center mb-4 px-4">
@@ -13,7 +23,8 @@ export default async function Productspage({ searchParams }) {
           <SearchBox />
         </div>
         <div className="flex items-center gap-2 ml-auto mt-2">
-          <CartButton />
+          {UserRole === "SELLER" && <ProductRegisterButton />}
+          {UserRole === "BUYER" && <CartButton />}
           <LogoutButton />
         </div>
       </header>

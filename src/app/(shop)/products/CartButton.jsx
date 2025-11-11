@@ -4,7 +4,7 @@ export default function CartButton() {
     <>
       <Link
         href="/cart"
-        className="bg-blue-300 text-white px-4 py-2 rounded hover:bg-blue-600 inline-flex items-center"
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 inline-flex items-center"
       >
         🛒 カート
       </Link>

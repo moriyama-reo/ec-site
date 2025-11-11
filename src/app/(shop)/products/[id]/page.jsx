@@ -1,14 +1,24 @@
-import { getProduct } from "../../../lib/product";
+import { getProduct } from "../../../../lib/product";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import AddToCartButton from "./AddToCartButton";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../../lib/auth";
 
 export default async function Productpage({ params }) {
   const { id } = await params;
   const product = await getProduct(id);
 
   if (!product) notFound();
+
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return new Response("ログインしてください", { status: 401 });
+  }
+
+  const UserRole = session.user.role;
 
   return (
     <div className="container mx-auto shadow-md px-4 py-8 w-96 m-2">
@@ -21,6 +31,7 @@ export default async function Productpage({ params }) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="rounded-t-md object-cover"
             priority
+            unoptimized
           />
         </div>
       )}
@@ -36,8 +47,18 @@ export default async function Productpage({ params }) {
       <p className="mb-2">
         更新日: {new Date(product.updatedAt).toLocaleDateString()}
       </p>
-      <AddToCartButton productId={product.id} />
-      {/* PRODUCT_DETAIL -->|戻るボタンクリック| PRODUCTS */}
+      <div>
+        {UserRole === "BUYER" && <AddToCartButton productId={product.id} />}
+        {/* 編集ボタン押したらページは変わらず、その場で編集できるようにする */}
+        {UserRole === "SELLER" && (
+          <Link
+            href={`/products/${product.id}/edit`}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 py-2 rounded inline-flex items-center justify-center mt-2"
+          >
+            編集
+          </Link>
+        )}
+      </div>
       <Link
         href="/products"
         className="bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 py-2 rounded inline-flex items-center justify-center mt-2"

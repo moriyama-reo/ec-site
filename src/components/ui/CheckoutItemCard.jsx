@@ -15,6 +15,7 @@ export default function CheckoutItemCard({ cartItem }) {
             height={150}
             className="object-cover w-full h-full"
             priority
+            unoptimized
           />
         </div>
         <h2 className="font-bold text-lg">{cartItem.product.name}</h2>

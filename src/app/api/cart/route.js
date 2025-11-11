@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../lib/auth";
-import { createCartItem } from "../../lib/cart";
+import { authOptions } from "../../../lib/auth";
+import { createCartItem } from "../../../lib/cart";
 
 export async function POST(req) {
   // セッション取得
@@ -10,10 +10,10 @@ export async function POST(req) {
   }
 
   const userId = session.user.id;
-  const { productId, quantity } = await req.json();
+  const { productId } = await req.json();
 
-  // DBアクセス（カート登録）
-  const cartItem = await createCartItem(userId, productId, quantity);
+  // DBアクセス（カート登録 or 同じアイテムを追加）
+  const cartItem = await createCartItem(userId, productId);
 
   // カート合計計算
   const price = Number(cartItem.product.price);

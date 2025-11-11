@@ -1,4 +1,4 @@
-// 初期ユーザー投入
+// 初期ユーザー投入（node prisma/seed.jsで実行）
 import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 
@@ -6,20 +6,28 @@ const prisma = new PrismaClient();
 
 async function main() {
   // 全ユーザー削除（クリーンアップ）
-  await prisma.user.deleteMany();
+  // await prisma.user.deleteMany();
 
-  // パスワードのハッシュ化
-  const hashedPassword = await bcrypt.hash("password123", 12);
+  // ユーザー作成（1人目）
+  //   const user = await prisma.user.create({
+  //     data: {
+  //       id: "user_123",
+  //       email: "user@example.com",
+  //       password: await bcrypt.hash("password123", 12),
+  //     },
+  //   });
+  //   console.log("登録完了:", { user });
 
-  // ユーザー作成
-  const user = await prisma.user.create({
+  // ユーザー作成（2人目以降）
+  const user2 = await prisma.user.create({
     data: {
-      id: "user_123",
-      email: "user@example.com",
-      password: hashedPassword,
+      id: "user_456",
+      email: "user2@example.com",
+      password: await bcrypt.hash("password456", 12),
+      role: "SELLER",
     },
   });
-  console.log("登録完了:", { user });
+  console.log("登録完了:", { user2 });
 }
 
 main()

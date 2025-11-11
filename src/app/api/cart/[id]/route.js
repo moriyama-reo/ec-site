@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../lib/auth";
-import { updateCartItemQuantity } from "../../../lib/cart";
-import { deleteCartItem } from "../../../lib/cart";
+import { authOptions } from "../../../../lib/auth";
+import { updateCartItemQuantity } from "../../../../lib/cart";
+import { deleteCartItem } from "../../../../lib/cart";
 
 export async function PUT(req, { params }) {
   // セッション取得

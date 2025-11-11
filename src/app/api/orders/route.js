@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../lib/auth";
-import { createOrder, deleteCartItems } from "../../lib/order";
+import { authOptions } from "../../../lib/auth";
+import { checkout } from "../../../lib/order";
 
 export async function POST(req) {
   // セッション取得
@@ -11,14 +11,8 @@ export async function POST(req) {
   const userId = session.user.id;
   const reqData = await req.json();
 
-  // 1:注文作成
-  const order = await createOrder(userId, reqData, reqData.cartItems);
-
-  // 2:カートアイテム削除
-  await deleteCartItems(userId);
-
-  // 3:在庫減少➡トリガーで自動で在庫を減らしてくれるのでコメントアウト
-  // await reduceStock(reqData.cartItems);
+  // 購入処理（トランザクション）
+  const order = await checkout(userId, reqData, reqData.cartItems);
 
   return new Response(
     JSON.stringify({

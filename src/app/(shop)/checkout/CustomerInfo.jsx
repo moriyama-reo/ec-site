@@ -39,7 +39,7 @@ export default function CustomerInfo({ totalPrice, cartItems }) {
       console.log("注文結果(注文完了！):", data);
       router.push("/orders/complete");
     } catch (error) {
-      console.log(error);
+      console.error(err);
       router.push("/cart");
     }
   };

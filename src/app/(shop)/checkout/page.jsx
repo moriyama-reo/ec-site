@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../lib/auth";
+import { authOptions } from "../../../lib/auth";
 import CheckoutItmeList from "./CheckoutItmeList";
 import Link from "next/link";
-import { getCartItems } from "../../lib/cart";
+import { getCartItems } from "../../../lib/cart";
 import TotalPrice from "./totalPrice";
 import CustomerInfo from "./CustomerInfo";
 
@@ -23,6 +23,8 @@ export default async function Checkoutpage() {
     totalPrice += item.product.price * item.quantity;
   });
 
+  const UserRole = session.user.role;
+
   return (
     <>
       <div className="container mx-auto mt-10">
@@ -39,12 +41,14 @@ export default async function Checkoutpage() {
         </p>
         {/* 購入者情報一覧 */}
         <CustomerInfo totalPrice={totalPrice} cartItems={cartItems} />
-        <Link
-          href="/cart"
-          className="flex justify-center items-center rounded bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 py-2 my-4 w-auto max-w-xs mx-auto"
-        >
-          カートに戻る
-        </Link>
+        {UserRole === "BUYER" && (
+          <Link
+            href="/cart"
+            className="flex justify-center items-center rounded bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 py-2 my-4 w-auto max-w-xs mx-auto"
+          >
+            カートに戻る
+          </Link>
+        )}
       </div>
     </>
   );

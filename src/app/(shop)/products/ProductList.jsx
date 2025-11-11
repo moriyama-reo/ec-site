@@ -1,4 +1,4 @@
-import { getProducts, searchProduct } from "../../lib/product";
+import { getProducts, searchProduct } from "../../../lib/product";
 import ProductCard from "../../../components/ui/ProductCard";
 
 export default async function ProductList({ searchParams }) {
