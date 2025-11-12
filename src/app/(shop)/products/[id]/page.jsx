@@ -49,13 +49,12 @@ export default async function Productpage({ params }) {
       </p>
       <div>
         {UserRole === "BUYER" && <AddToCartButton productId={product.id} />}
-        {/* 編集ボタン押したらページは変わらず、その場で編集できるようにする */}
         {UserRole === "SELLER" && (
           <Link
             href={`/products/${product.id}/edit`}
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 py-2 rounded inline-flex items-center justify-center mt-2"
           >
-            編集
+            ✏️編集
           </Link>
         )}
       </div>
@@ -63,7 +62,7 @@ export default async function Productpage({ params }) {
         href="/products"
         className="bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 py-2 rounded inline-flex items-center justify-center mt-2"
       >
-        戻る
+        🡰 戻る
       </Link>
     </div>
   );

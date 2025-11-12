@@ -85,3 +85,31 @@ export async function createProduct(productData) {
     },
   });
 }
+
+// 商品更新(販売者用)
+export async function updateProduct(productEditData, productId) {
+  return await prisma.product.update({
+    where: { id: productId },
+    data: {
+      name: productEditData.name,
+      price: parseFloat(productEditData.price),
+      description: productEditData.description,
+      stock: parseInt(productEditData.stock, 10),
+      categoryId: productEditData.categoryId,
+      images: {
+        create: [{ imageUrl: productEditData.imageUrl }],
+      },
+    },
+    include: {
+      category: { select: { id: true, name: true } },
+      images: { select: { imageUrl: true } },
+    },
+  });
+}
+
+// 商品削除(販売者用)
+export async function deleteProduct(productId) {
+  return await prisma.product.delete({
+    where: { id: productId },
+  });
+}
