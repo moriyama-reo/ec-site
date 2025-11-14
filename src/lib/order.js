@@ -72,3 +72,109 @@ export async function checkout(userId, orderData, cartItems) {
     return { ...order, orderItems };
   });
 }
+
+// 注文一覧を取得（ページネーション対応済み）
+export async function getOrders({ sellerId, page = 1, limit = 10 }) {
+  const totalItems = await prisma.order.count({
+    where: {
+      orderItems: { some: { product: { sellerId: sellerId } } },
+    },
+  });
+
+  const totalPages = Math.ceil(totalItems / limit);
+
+  const orders = await prisma.order.findMany({
+    where: {
+      orderItems: {
+        some: {
+          product: {
+            sellerId: sellerId,
+          },
+        },
+      },
+    },
+    select: {
+      id: true,
+      orderNumber: true,
+      status: true,
+      total: true,
+      createdAt: true,
+    },
+    // スキップ件数
+    skip: (page - 1) * limit,
+    // 取得件数（デフォルト:10）
+    take: limit,
+  });
+  return {
+    success: true,
+    data: {
+      orders,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+        limit,
+      },
+    },
+  };
+}
+
+// 注文詳細一覧を取得
+export async function getOrderDetails({ orderId }) {
+  const orderDetails = await prisma.order.findUnique({
+    where: {
+      id: orderId,
+    },
+    select: {
+      id: true,
+      orderNumber: true,
+      status: true,
+      total: true,
+      shippingAddress: true,
+      paymentMethod: true,
+      createdAt: true,
+      updatedAt: true,
+      orderItems: {
+        select: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+            },
+          },
+          quantity: true,
+          // price: true,
+        },
+      },
+    },
+  });
+
+  // subtotalを計算してorderItemsに追加
+  const subtotal = orderDetails.orderItems.map((item) => ({
+    ...item,
+    subtotal: Number(item.product.price) * Number(item.quantity),
+  }));
+
+  return {
+    success: true,
+    data: {
+      orderDetails: {
+        ...orderDetails,
+        orderItems: subtotal,
+      },
+    },
+  };
+}
+
+// ステータス更新
+export async function updateOrderStatus({ orderId, status }) {
+  return await prisma.order.update({
+    where: { id: orderId },
+    data: {
+      status: status,
+    },
+  });
+}

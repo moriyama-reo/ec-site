@@ -1,10 +1,10 @@
-import ProductInfo from "./ProductInfo";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../../lib/auth";
+import { authOptions } from "../../../lib/auth";
 import { NextResponse } from "next/server";
 import Link from "next/link";
+import OrdersList from "./OrdersList";
 
-export default async function AdminProduct() {
+export default async function OrderManagepage() {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json(
@@ -15,13 +15,13 @@ export default async function AdminProduct() {
   if (session.user.role !== "SELLER") {
     return NextResponse.json({ error: "権限がありません" }, { status: 403 });
   }
-  const userId = session.user.id;
 
   return (
     <>
-      <ProductInfo userId={userId} />
+      <OrdersList />
+
       <Link
-        href="/products"
+        href={"/products"}
         className="flex justify-center bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 py-2 rounded items-center mt-2 max-w-xs mx-auto"
       >
         🡰 戻る

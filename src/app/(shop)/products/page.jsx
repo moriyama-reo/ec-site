@@ -7,6 +7,7 @@ import ProductList from "../products/ProductList";
 import ProductRegisterButton from "./ProductsNewButton";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
+import OrderManageButton from "./OrderManageButton";
 
 export default async function Productspage({ searchParams }) {
   const session = await getServerSession(authOptions);
@@ -23,7 +24,12 @@ export default async function Productspage({ searchParams }) {
           <SearchBox />
         </div>
         <div className="flex items-center gap-2 ml-auto mt-2">
-          {UserRole === "SELLER" && <ProductRegisterButton />}
+          {UserRole === "SELLER" && (
+            <>
+              <ProductRegisterButton />
+              <OrderManageButton />
+            </>
+          )}
           {UserRole === "BUYER" && <CartButton />}
           <LogoutButton />
         </div>

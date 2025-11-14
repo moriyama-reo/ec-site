@@ -46,7 +46,7 @@ export default async function Checkoutpage() {
             href="/cart"
             className="flex justify-center items-center rounded bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 py-2 my-4 w-auto max-w-xs mx-auto"
           >
-            カートに戻る
+            🡰 カートに戻る
           </Link>
         )}
       </div>

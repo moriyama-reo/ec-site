@@ -9,7 +9,7 @@ export default function Notfound() {
         href="/products"
         className="bg-gray-500 hover:bg-gray-600 text-white font-bold px-10 py-2 rounded "
       >
-        商品ページへ戻る
+        🡰 商品ページへ戻る
       </Link>
     </div>
   );

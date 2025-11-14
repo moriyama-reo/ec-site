@@ -25,5 +25,8 @@ export async function POST(req) {
     );
   }
 
-  return NextResponse.json(newproduct, { status: 200 });
+  return NextResponse.json(
+    { success: true, data: newproduct },
+    { status: 200 }
+  );
 }

@@ -2,7 +2,6 @@
 import ProductRegisterButton from "./ProductRegisterButton";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function ProductInfo({ userId }) {
   const router = useRouter();
@@ -193,12 +192,6 @@ export default function ProductInfo({ userId }) {
           <ProductRegisterButton onClick={handleClick} />
         </form>
       </div>
-      <Link
-        href="/products"
-        className="flex justify-center bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 py-2 rounded items-center mt-2 max-w-xs mx-auto"
-      >
-        戻る
-      </Link>
     </>
   );
 }

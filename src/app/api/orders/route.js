@@ -1,6 +1,9 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
 import { checkout } from "../../../lib/order";
+import { getSellerId } from "../../../lib/seller";
+import { getOrders } from "../../../lib/order";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   // セッション取得
@@ -36,4 +39,36 @@ export async function POST(req) {
     }),
     { status: 200 }
   );
+}
+
+// 注文一覧取得処理
+export async function GET(req) {
+  // セッション取得
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json(
+      { error: "ログインしてください" },
+      { status: 401 }
+    );
+  }
+
+  const userId = session.user.id;
+  // セッションIDを取得
+  const sellerId = (await getSellerId(userId)).id;
+
+  // pageを取り出す
+  const { searchParams } = new URL(req.url);
+  const page = Number(searchParams.get("page") || 1);
+
+  // オーダー情報取得
+  const orders = await getOrders({ sellerId, page });
+
+  if (!orders) {
+    return NextResponse.json(
+      { error: "オーダー情報がありません" },
+      { status: 404 }
+    );
+  }
+
+  return NextResponse.json(orders, { status: 200 });
 }
