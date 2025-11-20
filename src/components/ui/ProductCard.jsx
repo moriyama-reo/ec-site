@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function ProductCard({ product }) {
+  const isSoldout = product.stock === 0;
   return (
     <div className="border p-4 rounded shadow-md w-60 m-2">
       <Link href={`/products/${product.id}`}>
@@ -20,8 +21,13 @@ export default function ProductCard({ product }) {
         )}
         <h2 className="font-bold text-lg">{product.name}</h2>
         <p className="font-semibold">
-          ￥{product.price.toNumber().toLocaleString()}(税込)
+          ￥{product.price.toLocaleString()}(税込)
         </p>
+        {isSoldout && (
+          <p className="text-center text-red-600 font-semibold mt-2 animate-fade-in">
+            売り切れ
+          </p>
+        )}
       </Link>
     </div>
   );

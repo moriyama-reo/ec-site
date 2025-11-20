@@ -10,29 +10,38 @@ export default function ProductEditForm({ product, categories }) {
     description: product.description,
     stock: product.stock,
     categoryId: product.category.id,
-    imageUrl: product.images[0].imageUrl,
+    imageUrl: product.images[0]?.imageUrl,
   });
   const [imageList, setImageList] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const router = useRouter();
 
   // 画像データ取得
   useEffect(() => {
     const fetchImages = async () => {
+      setErrorMessage("");
+
       try {
         const res = await fetch("/api/images");
-        if (!res.ok) throw new Error("画像取得失敗");
         const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error?.message || "画像取得失敗");
+        }
+
         setImageList(data.images);
       } catch (err) {
-        console.error(err);
+        setErrorMessage(err.message);
       }
     };
     fetchImages();
   }, []);
 
+  // 商品更新
   const handleClick = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
     try {
       const res = await fetch(`/api/products/${product.id}`, {
@@ -40,21 +49,28 @@ export default function ProductEditForm({ product, categories }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ formData, productId: product.id }),
       });
-      if (!res.ok) throw new Error("商品更新失敗");
       const data = await res.json();
-      console.log("商品更新完了:", data);
+
+      if (!res.ok) {
+        throw new Error(data.error?.message || "商品更新失敗");
+      }
       router.push("/products");
     } catch (err) {
-      console.error(err);
-      router.push(`/products/${product.id}/edit`);
+      setErrorMessage(err.message);
+      setTimeout(() => {
+        router.push(`/products/${product.id}/edit`);
+      }, 1500);
     }
   };
 
   return (
     <>
-      <p className="flex justify-center items-center text-4xl font-bold mt-4 text-black ">
-        商品情報更新
-      </p>
+      {errorMessage && (
+        <p className="text-center text-red-600 font-semibold mt-2 animate-fade-in">
+          {errorMessage}
+        </p>
+      )}
+
       <div className="max-w-md mx-auto bg-white shadow-md rounded-lg p-6 mt-6">
         <form className="flex flex-col w-full gap-2">
           商品名：
@@ -74,7 +90,7 @@ export default function ProductEditForm({ product, categories }) {
             required
             value={formData.price}
             onChange={(e) =>
-              setFormData({ ...formData, price: e.target.value })
+              setFormData({ ...formData, price: Number(e.target.value) })
             }
           />
           商品説明：
@@ -95,7 +111,7 @@ export default function ProductEditForm({ product, categories }) {
             required
             value={formData.stock}
             onChange={(e) =>
-              setFormData({ ...formData, stock: e.target.value })
+              setFormData({ ...formData, stock: Number(e.target.value) })
             }
           />
           カテゴリー名：

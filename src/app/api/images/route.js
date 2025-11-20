@@ -10,11 +10,25 @@ export async function GET() {
     const files = fs.readdirSync(imagesDir);
     // ファイル名をURLに変換
     const urls = files.map((file) => `images/${file}`);
-    return NextResponse.json({ images: urls }, { status: 200 });
-  } catch (err) {
-    console.error(err);
     return NextResponse.json(
-      { error: "画像取得に失敗しました" },
+      {
+        success: true,
+        images: urls,
+        meta: { timestamp: new Date().toISOString(), version: "1.0.0" },
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: "INTERNAL_SERVER_ERROR",
+          message: "画像取得中にエラーが発生しました",
+          details: err.message,
+        },
+        meta: { timestamp: new Date().toISOString(), version: "1.0.0" },
+      },
       { status: 500 }
     );
   }

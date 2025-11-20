@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CartItemCard from "../../../components/ui/CartItemCard";
-import Link from "next/link";
 import CartItemSkelton from "../../../components/ui/CartItemSkelton";
+import CheckoutItmeList from "./CheckoutItmeList";
+import TotalPrice from "./totalPrice";
+import CustomerInfo from "./CustomerInfo";
 
-export default function CartItemList({ userRole }) {
+export default function CheckoutCartItemList({ userRole }) {
   const [cartItems, setCratItems] = useState({
     itemCount: 0,
     items: [],
@@ -40,6 +41,9 @@ export default function CartItemList({ userRole }) {
 
   return (
     <>
+      <p className="flex justify-center items-center text-4xl font-bold mt-2">
+        ご注文内容確認
+      </p>
       <main className="flex flex-wrap justify-center items-center md:mt-10 mt-10">
         {loading ? (
           <CartItemSkelton />
@@ -50,20 +54,24 @@ export default function CartItemList({ userRole }) {
         ) : cartItems.itemCount === 0 ? (
           <p className="text-red-500 font-bold">カートの中身が空です</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {cartItems.items.map((cartItem) => (
-              <CartItemCard key={cartItem.id} cartItem={cartItem} />
-            ))}
+          <div className="container mx-auto">
+            {/* カートの中身 */}
+            <CheckoutItmeList cartItems={cartItems} />
+            {/* 合計 */}
+            <TotalPrice totalPrice={cartItems.total} />
           </div>
         )}
       </main>
-      {userRole === "BUYER" && cartItems.itemCount > 0 && (
-        <Link
-          href="/checkout"
-          className="flex justify-center items-center rounded bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-2 mt-4 w-auto max-w-xs mx-auto"
-        >
-          購入
-        </Link>
+      <p className="flex justify-center items-center text-2xl bg-gray-300 font-bold mt-2">
+        お客様情報
+      </p>
+      {/* 購入者情報一覧 */}
+      {userRole === "BUYER" && (
+        <CustomerInfo
+          totalPrice={cartItems.total}
+          cartItems={cartItems}
+          userRole={userRole}
+        />
       )}
     </>
   );

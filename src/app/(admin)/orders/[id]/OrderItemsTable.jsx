@@ -23,13 +23,13 @@ export default function OrderItemsTable({ orderDetails }) {
           </tr>
         </thead>
         <tbody>
-          {orderDetails?.orderItems?.map((item) => (
+          {orderDetails?.items?.map((item) => (
             <tr key={item.product.id}>
               <td className="border border-gray-300 px-4 py-2">
                 {item.product.name}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                ￥{Number(item.product.price).toLocaleString()}
+                ￥{item.product.price.toLocaleString()}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {item.quantity}

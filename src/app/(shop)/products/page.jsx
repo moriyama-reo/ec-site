@@ -1,21 +1,20 @@
 import SearchBox from "./SearchBox";
 import CartButton from "./CartButton";
 import LogoutButton from "./LogoutButton";
-import { Suspense } from "react";
-import ProductCardSkelton from "../../../components/ui/ProductCardSkelton";
 import ProductList from "../products/ProductList";
 import ProductRegisterButton from "./ProductsNewButton";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../lib/auth";
 import OrderManageButton from "./OrderManageButton";
+import { redirect } from "next/navigation";
 
-export default async function Productspage({ searchParams }) {
+export default async function Productspage() {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return new Response("ログインしてください", { status: 401 });
+    redirect("/login");
   }
 
-  const UserRole = session.user.role;
+  const userRole = session.user.role;
 
   return (
     <>
@@ -24,21 +23,19 @@ export default async function Productspage({ searchParams }) {
           <SearchBox />
         </div>
         <div className="flex items-center gap-2 ml-auto mt-2">
-          {UserRole === "SELLER" && (
+          {userRole === "SELLER" && (
             <>
               <ProductRegisterButton />
               <OrderManageButton />
             </>
           )}
-          {UserRole === "BUYER" && <CartButton />}
+          {userRole === "BUYER" && <CartButton />}
           <LogoutButton />
         </div>
       </header>
       <main className="flex flex-wrap justify-center items-center md:mt-10 mt-10">
         <h2 className="text-center w-full font-bold text-4xl mb-2">商品一覧</h2>
-        <Suspense fallback={<ProductCardSkelton />}>
-          <ProductList searchParams={searchParams} />
-        </Suspense>
+        <ProductList />
       </main>
     </>
   );

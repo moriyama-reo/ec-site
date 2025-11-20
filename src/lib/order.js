@@ -69,7 +69,17 @@ export async function checkout(userId, orderData, cartItems) {
     // 4:カートアイテム削除
     await tx.cartItem.deleteMany({ where: { userId: userId } });
 
-    return { ...order, orderItems };
+    const items = cartItems.map((item) => ({
+      product: {
+        id: item.product.id,
+        name: item.product.name,
+        price: item.product.price,
+      },
+      quantity: item.quantity,
+      subtotal: item.quantity * item.product.price,
+    }));
+
+    return { ...order, items };
   });
 }
 
@@ -80,8 +90,6 @@ export async function getOrders({ sellerId, page = 1, limit = 10 }) {
       orderItems: { some: { product: { sellerId: sellerId } } },
     },
   });
-
-  const totalPages = Math.ceil(totalItems / limit);
 
   const orders = await prisma.order.findMany({
     where: {
@@ -105,20 +113,7 @@ export async function getOrders({ sellerId, page = 1, limit = 10 }) {
     // 取得件数（デフォルト:10）
     take: limit,
   });
-  return {
-    success: true,
-    data: {
-      orders,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalItems,
-        hasNext: page < totalPages,
-        hasPrev: page > 1,
-        limit,
-      },
-    },
-  };
+  return { orders, totalItems };
 }
 
 // 注文詳細一覧を取得
@@ -146,7 +141,6 @@ export async function getOrderDetails({ orderId }) {
             },
           },
           quantity: true,
-          // price: true,
         },
       },
     },
@@ -159,13 +153,8 @@ export async function getOrderDetails({ orderId }) {
   }));
 
   return {
-    success: true,
-    data: {
-      orderDetails: {
-        ...orderDetails,
-        orderItems: subtotal,
-      },
-    },
+    ...orderDetails,
+    orderItems: subtotal,
   };
 }
 

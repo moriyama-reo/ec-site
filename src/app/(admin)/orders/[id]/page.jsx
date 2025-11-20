@@ -2,18 +2,17 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import Link from "next/link";
 import OrderDetails from "./OrderDetails";
+import { redirect } from "next/navigation";
 
 export default async function OrderDetailpage({ params }) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return NextResponse.json(
-      { error: "ログインしてください" },
-      { status: 401 }
-    );
+    redirect("/login");
   }
   if (session.user.role !== "SELLER") {
-    return NextResponse.json({ error: "権限がありません" }, { status: 403 });
+    notFound();
   }
+
   const { id: orderId } = await params;
 
   return (

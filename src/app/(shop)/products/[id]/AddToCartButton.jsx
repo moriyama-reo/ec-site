@@ -4,8 +4,12 @@ import Link from "next/link";
 
 export default function AddToCartButton({ productId }) {
   const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleClick = async () => {
+    setMessage("");
+    setErrorMessage("");
+
     try {
       const res = await fetch("/api/cart", {
         method: "POST",
@@ -13,10 +17,13 @@ export default function AddToCartButton({ productId }) {
         body: JSON.stringify({ productId }),
       });
       const data = await res.json();
-      console.log("カート追加成功:", data);
+
+      if (!res.ok) {
+        throw new Error(data.error?.message || "カート追加失敗");
+      }
       setMessage(data.data.message);
-    } catch (error) {
-      console.error("カート追加失敗:", error);
+    } catch (err) {
+      setErrorMessage(err.message);
     }
   };
 
@@ -40,6 +47,11 @@ export default function AddToCartButton({ productId }) {
             カートを見る
           </Link>
         </>
+      )}
+      {errorMessage && (
+        <p className="text-center text-red-600 font-semibold mt-2 animate-fade-in">
+          {errorMessage}
+        </p>
       )}
     </div>
   );

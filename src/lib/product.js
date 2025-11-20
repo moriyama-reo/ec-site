@@ -1,8 +1,23 @@
 import { prisma } from "./prisma";
 
-// 商品一覧を取得
-export async function getProducts() {
-  return await prisma.product.findMany({
+// 商品一覧取得（ページネーション対応済み）
+// 検索ワードが存在する場合は検索に対応し、検索ワードがない場合は全件取得
+export async function getProducts({ page = 1, limit = 20, search = "" }) {
+  const where = search
+    ? {
+        OR: [
+          { name: { contains: search } },
+          { description: { contains: search } },
+        ],
+      }
+    : {};
+
+  const totalItems = await prisma.product.count({
+    where,
+  });
+
+  const products = await prisma.product.findMany({
+    where,
     select: {
       id: true,
       name: true,
@@ -14,10 +29,15 @@ export async function getProducts() {
       category: { select: { id: true, name: true } },
       seller: { select: { id: true, name: true } },
     },
+    // スキップ件数
+    skip: (page - 1) * limit,
+    // 取得件数（デフォルト:20）
+    take: limit,
   });
+  return { products, totalItems };
 }
 
-// 商品詳細を取得
+// 商品詳細取得
 export async function getProduct(id) {
   return await prisma.product.findUnique({
     where: { id },
@@ -97,6 +117,7 @@ export async function updateProduct(productEditData, productId) {
       stock: parseInt(productEditData.stock, 10),
       categoryId: productEditData.categoryId,
       images: {
+        deleteMany: {},
         create: [{ imageUrl: productEditData.imageUrl }],
       },
     },
@@ -107,7 +128,7 @@ export async function updateProduct(productEditData, productId) {
   });
 }
 
-// 商品削除(販売者用)
+// 商品削除(販売者用)※productImageは自動で削除される
 export async function deleteProduct(productId) {
   return await prisma.product.delete({
     where: { id: productId },

@@ -46,7 +46,7 @@ export default function OrderTabale({ orders, page }) {
                 {order.orderNumber}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                ￥{Number(order.total).toLocaleString()}
+                ￥{order.total.toLocaleString()}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {order.status}

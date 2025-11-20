@@ -16,17 +16,24 @@ export default function ProductInfo({ userId }) {
     sellerId: "",
     imageUrl: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
 
   // カテゴリーデータ取得
   useEffect(() => {
     const fetchcategories = async () => {
+      setErrorMessage("");
+
       try {
         const res = await fetch("/api/categories");
-        if (!res.ok) throw new Error("カテゴリー取得失敗");
         const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error?.message || "カテゴリー取得失敗");
+        }
+
         setCategories(data.data.categories);
       } catch (err) {
-        console.error(err);
+        setErrorMessage(err.message);
       }
     };
     fetchcategories();
@@ -36,13 +43,20 @@ export default function ProductInfo({ userId }) {
   useEffect(() => {
     if (!userId) return;
     const fetchSeller = async () => {
+      setErrorMessage("");
+
       try {
         const res = await fetch(`/api/sellers/${userId}`);
-        if (!res.ok) throw new Error("販売者情報取得失敗");
         const data = await res.json();
-        setFormData((prev) => ({ ...prev, sellerId: data.id }));
+
+        if (!res.ok) {
+          throw new Error(data.error?.message || "販売者情報取得失敗");
+        }
+        const sellerId = data.data.id;
+
+        setFormData((prev) => ({ ...prev, sellerId: sellerId }));
       } catch (err) {
-        console.error(err);
+        setErrorMessage(err.message);
       }
     };
     fetchSeller();
@@ -51,13 +65,19 @@ export default function ProductInfo({ userId }) {
   // 画像データ取得
   useEffect(() => {
     const fetchImages = async () => {
+      setErrorMessage("");
+
       try {
         const res = await fetch("/api/images");
-        if (!res.ok) throw new Error("画像取得失敗");
         const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error?.message || "画像取得失敗");
+        }
+
         setImageList(data.images);
       } catch (err) {
-        console.error(err);
+        setErrorMessage(err.message);
       }
     };
     fetchImages();
@@ -65,8 +85,8 @@ export default function ProductInfo({ userId }) {
 
   const handleClick = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
-    // いったん、バリデーションをかける（今後はzod使用予定）
     if (
       !formData.name ||
       !formData.price ||
@@ -80,24 +100,35 @@ export default function ProductInfo({ userId }) {
       return;
     }
 
+    // 商品登録処理
     try {
       const res = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ formData }),
       });
-      if (!res.ok) throw new Error("商品登録失敗");
       const data = await res.json();
-      console.log("商品登録完了:", data);
+
+      if (!res.ok) {
+        throw new Error(data.error?.message || "商品登録失敗");
+      }
+
       router.push("/products");
     } catch (err) {
-      console.error(err);
-      router.push("/products/new");
+      setErrorMessage(err.message);
+      setTimeout(() => {
+        router.push("/products/new");
+      }, 1500);
     }
   };
 
   return (
     <>
+      {errorMessage && (
+        <p className="text-center text-red-600 font-semibold mt-2 animate-fade-in">
+          {errorMessage}
+        </p>
+      )}
       <p className="flex justify-center items-center text-4xl font-bold mt-4 text-black ">
         商品情報入力
       </p>
@@ -110,8 +141,9 @@ export default function ProductInfo({ userId }) {
             type="text"
             placeholder="Tシャツ"
             required
-            value={formData.name}
+            value={formData.name || ""}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            autoComplete="off"
           />
           価格：
           <input
@@ -120,10 +152,11 @@ export default function ProductInfo({ userId }) {
             type="number"
             placeholder="1500"
             required
-            value={formData.price}
+            value={formData.price || ""}
             onChange={(e) =>
               setFormData({ ...formData, price: e.target.value })
             }
+            autoComplete="off"
           />
           商品説明：
           <textarea
@@ -143,7 +176,7 @@ export default function ProductInfo({ userId }) {
             type="number"
             placeholder="10"
             required
-            value={formData.stock}
+            value={formData.stock || ""}
             onChange={(e) =>
               setFormData({ ...formData, stock: e.target.value })
             }
@@ -153,7 +186,7 @@ export default function ProductInfo({ userId }) {
             className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
             name="categoryId"
             required
-            value={formData.categoryId}
+            value={formData.categoryId || ""}
             onChange={(e) =>
               setFormData({ ...formData, categoryId: e.target.value })
             }
@@ -170,14 +203,14 @@ export default function ProductInfo({ userId }) {
             className="border border-gray-300 rounded-md px-4 py-2 bg-gray-100"
             name="sellerId"
             readOnly
-            value={formData.sellerId}
+            value={formData.sellerId || ""}
           />
           商品画像：
           <select
             className="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
             name="images"
             required
-            value={formData.imageUrl}
+            value={formData.imageUrl || ""}
             onChange={(e) =>
               setFormData({ ...formData, imageUrl: e.target.value })
             }

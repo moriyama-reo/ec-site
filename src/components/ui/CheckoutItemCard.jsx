@@ -2,14 +2,12 @@
 import Image from "next/image";
 
 export default function CheckoutItemCard({ cartItem }) {
-  const quantity = cartItem.quantity;
-
   return (
     <>
       <div className="border p-4 rounded shadow-md w-auto m-2">
         <div className="w-full h-40 overflow-hidden rounded-t-md">
           <Image
-            src={"/" + cartItem.product.images[0].imageUrl}
+            src={"/" + cartItem.product.imageUrl[0]}
             alt={cartItem.product.name}
             width={200}
             height={150}
@@ -22,7 +20,7 @@ export default function CheckoutItemCard({ cartItem }) {
         <p className="font-semibold">
           ￥{cartItem.product.price.toLocaleString()}(税込)
         </p>
-        <p>数量：{quantity}</p>
+        <p>数量：{cartItem.quantity}</p>
       </div>
     </>
   );

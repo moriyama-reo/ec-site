@@ -1,4 +1,4 @@
-export default function OrderPagination({ hasNext, hasPrev, setPage }) {
+export default function ProductPagination({ hasNext, hasPrev, setPage }) {
   return (
     <>
       <div className="flex justify-center items-center mt-4 mb-4">

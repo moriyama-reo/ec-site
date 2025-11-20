@@ -2,7 +2,7 @@ export default function CheckoutButton({ onClick }) {
   return (
     <div className="flex justify-center">
       <button
-        type="submit"
+        type="button"
         onClick={onClick}
         className="mt-6 bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 rounded-md transition-colors"
       >

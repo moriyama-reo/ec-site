@@ -3,7 +3,7 @@ import CheckoutButton from "./CheckoutButton";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function CustomerInfo({ totalPrice, cartItems }) {
+export default function CustomerInfo({ totalPrice, cartItems, userRole }) {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
@@ -12,11 +12,13 @@ export default function CustomerInfo({ totalPrice, cartItems }) {
     phone: "",
     paymentMethod: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleClick = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
+    if (userRole !== "BUYER") return;
 
-    // いったん、バリデーションをかける（今後はzod使用予定）
     if (
       !formData.name ||
       !formData.postalCode ||
@@ -34,18 +36,28 @@ export default function CustomerInfo({ totalPrice, cartItems }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, totalPrice, cartItems }),
       });
-      if (!res.ok) throw new Error("購入失敗");
       const data = await res.json();
-      console.log("注文結果(注文完了！):", data);
+
+      if (!res.ok) {
+        throw new Error(data.error?.message || "購入失敗");
+      }
+
       router.push("/orders/complete");
-    } catch (error) {
-      console.error(err);
-      router.push("/cart");
+    } catch (err) {
+      setErrorMessage(err.message);
+      setTimeout(() => {
+        router.push("/cart");
+      }, 1500);
     }
   };
 
   return (
     <>
+      {errorMessage && (
+        <p className="text-center text-red-600 font-semibold mt-2 animate-fade-in">
+          {errorMessage}
+        </p>
+      )}
       <div className="max-w-md mx-auto bg-white shadow-md rounded-lg p-6 mt-6">
         <form className="flex flex-col w-full gap-2">
           <input

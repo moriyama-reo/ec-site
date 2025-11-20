@@ -1,0 +1,9 @@
+export default function ProductDetailCardSkelton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="rounded shadow-md w-60 m-2 animate-pulse">
+        <div className="bg-gray-200 h-40 w-full rounded-md" />
+      </div>
+    </div>
+  );
+}
